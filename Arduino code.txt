@@ -1,0 +1,219 @@
+*
+---------------------------------------------
+--- Formula Student Gear Shifting Program ---
+---------------------------------------------
+
+Authors:
+    Nour Elghazawy
+    Ahmed Aldesouky
+    
+
+Description:
+    The program makes use of two pushbuttons,
+    two LEDs and one 7 Segment Display.
+    When pushbutton 1 is pressed, an Interrupt
+    Service Routine is called that increases the
+    gear count, displaying the number on the 7SD
+    and sending a signal to LED1.
+    When pushbutton 2 is pressed, another Interrupt
+    Service Routine is called that decreases the
+    gear count, displaying the number on the 7SD
+    and sending a signal to LED2.
+*/
+
+
+
+//declare initial state of the pushbuttons,
+//pushbutton pins and gear number
+volatile byte state = LOW;
+const byte buttonPin1 = 2;
+const byte buttonPin2 = 3;
+int gear = 0;
+
+//declare functions for displaying numbers
+void neutral (void) {
+    digitalWrite(4, LOW);
+    digitalWrite(5, LOW);
+    digitalWrite(A0, LOW);
+    digitalWrite(A1, HIGH);
+    digitalWrite(A2, LOW);
+    digitalWrite(6, LOW);
+    digitalWrite(7, HIGH);
+}
+
+void one (void) {
+    digitalWrite(4, HIGH);
+    digitalWrite(5, LOW);
+    digitalWrite(A0, LOW);
+    digitalWrite(A1, HIGH);
+    digitalWrite(A2, HIGH);
+    digitalWrite(6, HIGH);
+    digitalWrite(7, HIGH);
+}
+
+void two (void) {
+    digitalWrite(4, LOW);
+    digitalWrite(5, LOW);
+    digitalWrite(A0, HIGH);
+    digitalWrite(A1, LOW);
+    digitalWrite(A2, LOW);
+    digitalWrite(6, HIGH);
+    digitalWrite(7, LOW);
+}
+
+void three (void) {
+    digitalWrite(4, LOW);
+    digitalWrite(5, LOW);
+    digitalWrite(A0, LOW);
+    digitalWrite(A1, LOW);
+    digitalWrite(A2, HIGH);
+    digitalWrite(6, HIGH);
+    digitalWrite(7, LOW);
+}
+
+void four (void) {
+    digitalWrite(4, HIGH);
+    digitalWrite(5, LOW);
+    digitalWrite(A0, LOW);
+    digitalWrite(A1, HIGH);
+    digitalWrite(A2, HIGH);
+    digitalWrite(6, LOW);
+    digitalWrite(7, LOW);
+}
+
+void five (void) {
+    digitalWrite(4, LOW);
+    digitalWrite(5, HIGH);
+    digitalWrite(A0, LOW);
+    digitalWrite(A1, LOW);
+    digitalWrite(A2, HIGH);
+    digitalWrite(6, LOW);
+    digitalWrite(7, LOW);
+}
+
+void six (void) {
+    digitalWrite(4, LOW);
+    digitalWrite(5, HIGH);
+    digitalWrite(A0, LOW);
+    digitalWrite(A1, LOW);
+    digitalWrite(A2, LOW);
+    digitalWrite(6, LOW);
+    digitalWrite(7, LOW);
+}
+
+//declare Interrupt Service Routine for shifting up
+void shiftingUp(void) {
+
+    if (gear == 6) {
+        //maximum gear, do nothing
+        ;
+    }
+    else {
+        //increase gear by one
+        gear++;
+        //turn on LED1
+        digitalWrite(8, HIGH);
+        //0.1 seconds delay
+        for (int i = 0; i < 100; i++) {
+            delayMicroseconds(1000);
+        }
+        //turn off LED1
+        digitalWrite(8, LOW);
+    }
+
+    //decide which number to show on the 7SD
+    switch (gear) {
+        case 0:
+            neutral();
+            break;
+        case 1:
+            one();
+            break; 
+        case 2:
+            two();
+            break;
+        case 3:
+            three();
+            break;
+        case 4:
+            four();
+            break;
+        case 5:
+            five();
+            break;
+        case 6:
+            six();
+            break;
+    }
+}
+
+//declare Interrupt Service Routine for shifting down
+void shiftingDown(void) {
+
+    if (gear == 0) {
+        //the gear is already neutral, do nothing
+        ;
+    }
+    else {
+        //decrease gear by one
+        gear--;
+        //turn on LED2
+        digitalWrite(9, HIGH);
+        //0.1 seconds delay
+        for (int i = 0; i < 100; i++) {
+            delayMicroseconds(1000);
+        }
+        //turn off LED2
+        digitalWrite(9, LOW);
+    }
+
+    //decide which number to show on the 7SD
+    switch (gear) {
+        case 0:
+            neutral();
+            break;
+        case 1:
+            one();
+            break; 
+        case 2:
+            two();
+            break;
+        case 3:
+            three();
+            break;
+        case 4:
+            four();
+            break;
+        case 5:
+            five();
+            break;
+        case 6:
+            six();
+            break;
+    }
+}
+
+void setup() {
+  //set all necessary pins as input or outputs
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(A0, OUTPUT);
+  pinMode(A1, OUTPUT);
+  pinMode(A2, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(buttonPin1, INPUT);
+  pinMode(buttonPin2, INPUT);
+ 
+  attachInterrupt(digitalPinToInterrupt(buttonPin1), shiftingUp, RISING);
+  attachInterrupt(digitalPinToInterrupt(buttonPin2), shiftingDown, RISING);
+  
+  neutral(); 
+}
+
+
+void loop() {  
+  
+}
